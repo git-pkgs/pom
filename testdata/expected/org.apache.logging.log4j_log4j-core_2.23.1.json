@@ -1,0 +1,197 @@
+{
+  "gav": "org.apache.logging.log4j:log4j-core:2.23.1",
+  "dependencies": [
+    {
+      "groupId": "biz.aQute.bnd",
+      "artifactId": "biz.aQute.bnd.annotation",
+      "version": "7.0.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.conversantmedia",
+      "artifactId": "disruptor",
+      "version": "1.2.15",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-core",
+      "version": "2.16.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-databind",
+      "version": "2.16.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.fasterxml.jackson.dataformat",
+      "artifactId": "jackson-dataformat-xml",
+      "version": "2.16.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.fasterxml.jackson.dataformat",
+      "artifactId": "jackson-dataformat-yaml",
+      "version": "2.16.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.github.spotbugs",
+      "artifactId": "spotbugs-annotations",
+      "version": "4.8.3",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.errorprone",
+      "artifactId": "error_prone_annotations",
+      "version": "2.24.1",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.lmax",
+      "artifactId": "disruptor",
+      "version": "3.4.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.sun.mail",
+      "artifactId": "javax.mail",
+      "version": "1.6.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "javax.activation",
+      "artifactId": "javax.activation-api",
+      "version": "1.2.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "javax.jms",
+      "artifactId": "javax.jms-api",
+      "version": "2.0.1",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "javax.mail",
+      "artifactId": "javax.mail-api",
+      "version": "1.6.2",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-compress",
+      "version": "1.26.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-csv",
+      "version": "1.10.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.kafka",
+      "artifactId": "kafka-clients",
+      "version": "3.7.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-api",
+      "version": "2.23.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.fusesource.jansi",
+      "artifactId": "jansi",
+      "version": "2.4.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.jctools",
+      "artifactId": "jctools-core",
+      "version": "4.0.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.osgi",
+      "artifactId": "org.osgi.annotation.bundle",
+      "version": "2.0.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.osgi",
+      "artifactId": "org.osgi.core",
+      "version": "6.0.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.osgi",
+      "artifactId": "osgi.annotation",
+      "version": "8.1.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "2.0.9",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.zeromq",
+      "artifactId": "jeromq",
+      "version": "0.6.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    }
+  ]
+}

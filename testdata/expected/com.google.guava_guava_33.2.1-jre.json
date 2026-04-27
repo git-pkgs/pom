@@ -1,0 +1,53 @@
+{
+  "gav": "com.google.guava:guava:33.2.1-jre",
+  "dependencies": [
+    {
+      "groupId": "com.google.code.findbugs",
+      "artifactId": "jsr305",
+      "version": "3.0.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.errorprone",
+      "artifactId": "error_prone_annotations",
+      "version": "2.26.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.guava",
+      "artifactId": "failureaccess",
+      "version": "1.0.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.guava",
+      "artifactId": "listenablefuture",
+      "version": "9999.0-empty-to-avoid-conflict-with-guava",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.j2objc",
+      "artifactId": "j2objc-annotations",
+      "version": "3.0.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.checkerframework",
+      "artifactId": "checker-qual",
+      "version": "3.42.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

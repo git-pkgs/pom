@@ -1,0 +1,45 @@
+{
+  "gav": "org.springframework.boot:spring-boot-starter-web:3.3.4",
+  "dependencies": [
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-web",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-webmvc",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter",
+      "version": "3.3.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter-json",
+      "version": "3.3.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter-tomcat",
+      "version": "3.3.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

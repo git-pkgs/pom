@@ -1,0 +1,69 @@
+{
+  "gav": "org.apache.commons:commons-lang3:3.14.0",
+  "dependencies": [
+    {
+      "groupId": "com.google.code.findbugs",
+      "artifactId": "jsr305",
+      "version": "3.0.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-text",
+      "version": "1.11.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.easymock",
+      "artifactId": "easymock",
+      "version": "5.2.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hamcrest",
+      "artifactId": "hamcrest",
+      "version": "2.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit-pioneer",
+      "artifactId": "junit-pioneer",
+      "version": "1.9.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter",
+      "version": "5.10.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.openjdk.jmh",
+      "artifactId": "jmh-core",
+      "version": "1.37",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.openjdk.jmh",
+      "artifactId": "jmh-generator-annprocess",
+      "version": "1.37",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

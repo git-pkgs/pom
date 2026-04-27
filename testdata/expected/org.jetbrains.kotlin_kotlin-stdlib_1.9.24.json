@@ -1,0 +1,13 @@
+{
+  "gav": "org.jetbrains.kotlin:kotlin-stdlib:1.9.24",
+  "dependencies": [
+    {
+      "groupId": "org.jetbrains",
+      "artifactId": "annotations",
+      "version": "13.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

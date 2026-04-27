@@ -1,0 +1,21 @@
+{
+  "gav": "com.github.ben-manes.caffeine:caffeine:3.1.8",
+  "dependencies": [
+    {
+      "groupId": "com.google.errorprone",
+      "artifactId": "error_prone_annotations",
+      "version": "2.21.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.checkerframework",
+      "artifactId": "checker-qual",
+      "version": "3.37.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "gav": "org.springframework:spring-context:6.1.13",
+  "dependencies": [
+    {
+      "groupId": "io.micrometer",
+      "artifactId": "micrometer-observation",
+      "version": "1.12.10",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-aop",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-beans",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-core",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.springframework",
+      "artifactId": "spring-expression",
+      "version": "6.1.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

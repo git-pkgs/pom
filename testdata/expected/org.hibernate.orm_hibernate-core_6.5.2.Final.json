@@ -1,0 +1,93 @@
+{
+  "gav": "org.hibernate.orm:hibernate-core:6.5.2.Final",
+  "dependencies": [
+    {
+      "groupId": "com.fasterxml",
+      "artifactId": "classmate",
+      "version": "1.5.1",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "io.smallrye",
+      "artifactId": "jandex",
+      "version": "3.1.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "jakarta.inject",
+      "artifactId": "jakarta.inject-api",
+      "version": "2.0.1",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "jakarta.persistence",
+      "artifactId": "jakarta.persistence-api",
+      "version": "3.1.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "jakarta.transaction",
+      "artifactId": "jakarta.transaction-api",
+      "version": "2.0.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "jakarta.xml.bind",
+      "artifactId": "jakarta.xml.bind-api",
+      "version": "4.0.0",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "net.bytebuddy",
+      "artifactId": "byte-buddy",
+      "version": "1.14.15",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.antlr",
+      "artifactId": "antlr4-runtime",
+      "version": "4.13.0",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.glassfish.jaxb",
+      "artifactId": "jaxb-runtime",
+      "version": "4.0.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hibernate.common",
+      "artifactId": "hibernate-commons-annotations",
+      "version": "6.0.6.Final",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.jboss.logging",
+      "artifactId": "jboss-logging",
+      "version": "3.5.0.Final",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

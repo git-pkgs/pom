@@ -1,0 +1,13 @@
+{
+  "gav": "org.slf4j:slf4j-api:2.0.13",
+  "dependencies": [
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

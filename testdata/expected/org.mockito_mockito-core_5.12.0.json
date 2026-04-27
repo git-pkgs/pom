@@ -1,0 +1,29 @@
+{
+  "gav": "org.mockito:mockito-core:5.12.0",
+  "dependencies": [
+    {
+      "groupId": "net.bytebuddy",
+      "artifactId": "byte-buddy",
+      "version": "1.14.15",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "net.bytebuddy",
+      "artifactId": "byte-buddy-agent",
+      "version": "1.14.15",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.objenesis",
+      "artifactId": "objenesis",
+      "version": "3.3",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

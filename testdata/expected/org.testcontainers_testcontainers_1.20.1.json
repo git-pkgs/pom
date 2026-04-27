@@ -1,0 +1,61 @@
+{
+  "gav": "org.testcontainers:testcontainers:1.20.1",
+  "dependencies": [
+    {
+      "groupId": "com.github.docker-java",
+      "artifactId": "docker-java-api",
+      "version": "3.4.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.github.docker-java",
+      "artifactId": "docker-java-transport-zerodep",
+      "version": "3.4.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.cloud.tools",
+      "artifactId": "jib-core",
+      "version": "0.23.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-compress",
+      "version": "1.24.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.rnorth.duct-tape",
+      "artifactId": "duct-tape",
+      "version": "1.0.8",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "1.7.36",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "gav": "io.opentelemetry:opentelemetry-api:1.42.1",
+  "dependencies": [
+    {
+      "groupId": "io.opentelemetry",
+      "artifactId": "opentelemetry-context",
+      "version": "1.42.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

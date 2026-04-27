@@ -1,0 +1,205 @@
+{
+  "gav": "com.zaxxer:HikariCP:5.1.0",
+  "dependencies": [
+    {
+      "groupId": "com.h2database",
+      "artifactId": "h2",
+      "version": "2.1.212",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "io.dropwizard.metrics",
+      "artifactId": "metrics-core",
+      "version": "3.2.5",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.dropwizard.metrics",
+      "artifactId": "metrics-healthchecks",
+      "version": "3.2.5",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.micrometer",
+      "artifactId": "micrometer-core",
+      "version": "1.5.10",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.prometheus",
+      "artifactId": "simpleclient",
+      "version": "0.9.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "javax.inject",
+      "artifactId": "javax.inject",
+      "version": "1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.commons",
+      "artifactId": "commons-csv",
+      "version": "1.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.felix",
+      "artifactId": "org.apache.felix.framework",
+      "version": "6.0.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-api",
+      "version": "2.18.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-core",
+      "version": "2.18.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-slf4j-impl",
+      "version": "2.18.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hibernate",
+      "artifactId": "hibernate-core",
+      "version": "5.4.24.Final",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.javassist",
+      "artifactId": "javassist",
+      "version": "3.29.2-GA",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-core",
+      "version": "3.7.7",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.exam",
+      "artifactId": "pax-exam-container-native",
+      "version": "4.13.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.exam",
+      "artifactId": "pax-exam-junit4",
+      "version": "4.13.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.exam",
+      "artifactId": "pax-exam-link-assembly",
+      "version": "4.13.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.exam",
+      "artifactId": "pax-exam-link-mvn",
+      "version": "4.13.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.url",
+      "artifactId": "pax-url-aether",
+      "version": "2.5.4",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.ops4j.pax.url",
+      "artifactId": "pax-url-reference",
+      "version": "2.5.4",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.postgresql",
+      "artifactId": "postgresql",
+      "version": "42.5.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "1.7.36",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.testcontainers",
+      "artifactId": "postgresql",
+      "version": "1.17.6",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "simple-jndi",
+      "artifactId": "simple-jndi",
+      "version": "0.11.4.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

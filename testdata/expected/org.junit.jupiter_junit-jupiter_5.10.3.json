@@ -1,0 +1,29 @@
+{
+  "gav": "org.junit.jupiter:junit-jupiter:5.10.3",
+  "dependencies": [
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-api",
+      "version": "5.10.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-engine",
+      "version": "5.10.3",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-params",
+      "version": "5.10.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

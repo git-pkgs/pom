@@ -1,0 +1,53 @@
+{
+  "gav": "org.yaml:snakeyaml:2.2",
+  "dependencies": [
+    {
+      "groupId": "joda-time",
+      "artifactId": "joda-time",
+      "version": "2.11.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.velocity",
+      "artifactId": "velocity-engine-core",
+      "version": "2.3",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.openjdk.jmh",
+      "artifactId": "jmh-core",
+      "version": "1.36",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.openjdk.jmh",
+      "artifactId": "jmh-generator-annprocess",
+      "version": "1.36",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.projectlombok",
+      "artifactId": "lombok",
+      "version": "1.18.24",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

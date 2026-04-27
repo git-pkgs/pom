@@ -1,0 +1,29 @@
+{
+  "gav": "jakarta.servlet:jakarta.servlet-api:6.0.0",
+  "dependencies": [
+    {
+      "groupId": "org.hamcrest",
+      "artifactId": "hamcrest",
+      "version": "2.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-engine",
+      "version": "5.8.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-params",
+      "version": "5.8.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "gav": "org.modelmapper:modelmapper:3.2.0",
+  "dependencies": [
+    {
+      "groupId": "cglib",
+      "artifactId": "cglib",
+      "version": "3.3.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.h2database",
+      "artifactId": "h2",
+      "version": "2.0.206",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "javassist",
+      "artifactId": "javassist",
+      "version": "3.12.1.GA",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "ma.glasnost.orika",
+      "artifactId": "orika-core",
+      "version": "1.5.4",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "net.sf.dozer",
+      "artifactId": "dozer",
+      "version": "5.5.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hibernate",
+      "artifactId": "hibernate-entitymanager",
+      "version": "5.6.3.Final",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-core",
+      "version": "4.2.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.testng",
+      "artifactId": "testng",
+      "version": "7.5",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

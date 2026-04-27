@@ -1,0 +1,165 @@
+{
+  "gav": "ch.qos.logback:logback-classic:1.5.8",
+  "dependencies": [
+    {
+      "groupId": "ch.qos.logback",
+      "artifactId": "logback-core",
+      "version": "1.5.8",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "ch.qos.logback",
+      "artifactId": "logback-core",
+      "version": "1.5.8",
+      "scope": "test",
+      "type": "test-jar",
+      "optional": false
+    },
+    {
+      "groupId": "ch.qos.reload4j",
+      "artifactId": "reload4j",
+      "version": "1.2.18.4",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-databind",
+      "version": "2.15.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "jakarta.activation",
+      "artifactId": "jakarta.activation-api",
+      "version": "2.1.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "jakarta.mail",
+      "artifactId": "jakarta.mail-api",
+      "version": "2.1.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "jakarta.servlet",
+      "artifactId": "jakarta.servlet-api",
+      "version": "5.0.0",
+      "scope": "provided",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.felix",
+      "artifactId": "org.apache.felix.main",
+      "version": "5.6.10",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.assertj",
+      "artifactId": "assertj-core",
+      "version": "3.23.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.codehaus.janino",
+      "artifactId": "janino",
+      "version": "3.1.8",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.dom4j",
+      "artifactId": "dom4j",
+      "version": "2.0.3",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.eclipse.angus",
+      "artifactId": "angus-mail",
+      "version": "1.0.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hamcrest",
+      "artifactId": "hamcrest-library",
+      "version": "2.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-api",
+      "version": "5.9.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-engine",
+      "version": "5.9.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-core",
+      "version": "4.8.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "jul-to-slf4j",
+      "version": "2.0.15",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "log4j-over-slf4j",
+      "version": "2.0.15",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "2.0.15",
+      "scope": "test",
+      "type": "test-jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "2.0.15",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

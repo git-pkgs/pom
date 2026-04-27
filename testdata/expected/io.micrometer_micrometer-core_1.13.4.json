@@ -1,0 +1,293 @@
+{
+  "gav": "io.micrometer:micrometer-core:1.13.4",
+  "dependencies": [
+    {
+      "groupId": "ch.qos.logback",
+      "artifactId": "logback-classic",
+      "version": "1.2.13",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.github.ben-manes.caffeine",
+      "artifactId": "caffeine",
+      "version": "2.9.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.google.code.findbugs",
+      "artifactId": "jsr305",
+      "version": "3.0.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.google.guava",
+      "artifactId": "guava",
+      "version": "32.1.2-jre",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.hazelcast",
+      "artifactId": "hazelcast",
+      "version": "5.3.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.netflix.hystrix",
+      "artifactId": "hystrix-core",
+      "version": "1.5.12",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "com.squareup.okhttp3",
+      "artifactId": "okhttp",
+      "version": "4.11.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.dropwizard.metrics",
+      "artifactId": "metrics-core",
+      "version": "4.2.27",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.grpc",
+      "artifactId": "grpc-api",
+      "version": "1.58.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.grpc",
+      "artifactId": "grpc-kotlin-stub",
+      "version": "1.4.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.micrometer",
+      "artifactId": "context-propagation",
+      "version": "1.1.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "io.micrometer",
+      "artifactId": "micrometer-commons",
+      "version": "1.13.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "io.micrometer",
+      "artifactId": "micrometer-observation",
+      "version": "1.13.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "io.netty",
+      "artifactId": "netty-transport",
+      "version": "4.1.112.Final",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "jakarta.servlet",
+      "artifactId": "jakarta.servlet-api",
+      "version": "5.0.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "javax.cache",
+      "artifactId": "cache-api",
+      "version": "1.1.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "net.sf.ehcache",
+      "artifactId": "ehcache",
+      "version": "2.10.9.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.httpcomponents",
+      "artifactId": "httpasyncclient",
+      "version": "4.1.5",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.httpcomponents",
+      "artifactId": "httpclient",
+      "version": "4.5.14",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.httpcomponents.client5",
+      "artifactId": "httpclient5",
+      "version": "5.3.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.kafka",
+      "artifactId": "kafka-clients",
+      "version": "2.8.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.kafka",
+      "artifactId": "kafka-streams",
+      "version": "2.8.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-core",
+      "version": "2.23.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.apache.tomcat.embed",
+      "artifactId": "tomcat-embed-core",
+      "version": "8.5.100",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.aspectj",
+      "artifactId": "aspectjweaver",
+      "version": "1.9.22.1",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.eclipse.jetty",
+      "artifactId": "jetty-client",
+      "version": "9.4.55.v20240627",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.eclipse.jetty",
+      "artifactId": "jetty-server",
+      "version": "9.4.55.v20240627",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.glassfish.jersey.core",
+      "artifactId": "jersey-server",
+      "version": "2.43",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.hdrhistogram",
+      "artifactId": "HdrHistogram",
+      "version": "2.2.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.hibernate",
+      "artifactId": "hibernate-entitymanager",
+      "version": "5.6.15.Final",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.jetbrains.kotlin",
+      "artifactId": "kotlin-reflect",
+      "version": "1.9.24",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.jetbrains.kotlin",
+      "artifactId": "kotlin-stdlib-jdk8",
+      "version": "1.9.24",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.jetbrains.kotlinx",
+      "artifactId": "kotlinx-coroutines-core",
+      "version": "1.7.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.jooq",
+      "artifactId": "jooq",
+      "version": "3.14.16",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.latencyutils",
+      "artifactId": "LatencyUtils",
+      "version": "2.0.3",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.mongodb",
+      "artifactId": "mongodb-driver-sync",
+      "version": "4.11.3",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    }
+  ]
+}

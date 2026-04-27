@@ -1,0 +1,37 @@
+{
+  "gav": "com.google.code.gson:gson:2.11.0",
+  "dependencies": [
+    {
+      "groupId": "com.google.errorprone",
+      "artifactId": "error_prone_annotations",
+      "version": "2.27.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.guava",
+      "artifactId": "guava-testlib",
+      "version": "33.1.0-jre",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "com.google.truth",
+      "artifactId": "truth",
+      "version": "1.4.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

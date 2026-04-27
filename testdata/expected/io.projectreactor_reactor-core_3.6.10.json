@@ -1,0 +1,13 @@
+{
+  "gav": "io.projectreactor:reactor-core:3.6.10",
+  "dependencies": [
+    {
+      "groupId": "org.reactivestreams",
+      "artifactId": "reactive-streams",
+      "version": "1.0.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "gav": "org.apache.httpcomponents.client5:httpclient5:5.3.1",
+  "dependencies": [
+    {
+      "groupId": "io.reactivex.rxjava2",
+      "artifactId": "rxjava",
+      "version": "2.2.21",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.httpcomponents.core5",
+      "artifactId": "httpcore5",
+      "version": "5.2.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.httpcomponents.core5",
+      "artifactId": "httpcore5-h2",
+      "version": "5.2.4",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.httpcomponents.core5",
+      "artifactId": "httpcore5-reactive",
+      "version": "5.2.4",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-core",
+      "version": "2.20.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.apache.logging.log4j",
+      "artifactId": "log4j-slf4j-impl",
+      "version": "2.20.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.brotli",
+      "artifactId": "dec",
+      "version": "0.1.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.conscrypt",
+      "artifactId": "conscrypt-openjdk-uber",
+      "version": "2.5.2",
+      "scope": "compile",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.hamcrest",
+      "artifactId": "hamcrest",
+      "version": "2.2",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter",
+      "version": "5.10.1",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.mockito",
+      "artifactId": "mockito-core",
+      "version": "4.11.0",
+      "scope": "test",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.slf4j",
+      "artifactId": "slf4j-api",
+      "version": "1.7.36",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

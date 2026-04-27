@@ -1,0 +1,21 @@
+{
+  "gav": "com.squareup.okhttp3:okhttp:4.12.0",
+  "dependencies": [
+    {
+      "groupId": "com.squareup.okio",
+      "artifactId": "okio",
+      "version": "3.6.0",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.jetbrains.kotlin",
+      "artifactId": "kotlin-stdlib-jdk8",
+      "version": "1.8.21",
+      "scope": "compile",
+      "type": "jar",
+      "optional": false
+    }
+  ]
+}

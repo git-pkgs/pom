@@ -1,0 +1,37 @@
+{
+  "gav": "org.postgresql:postgresql:42.7.3",
+  "dependencies": [
+    {
+      "groupId": "com.github.waffle",
+      "artifactId": "waffle-jna",
+      "version": "1.9.1",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "junit",
+      "artifactId": "junit",
+      "version": "4.13.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": true
+    },
+    {
+      "groupId": "org.checkerframework",
+      "artifactId": "checker-qual",
+      "version": "3.42.0",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": false
+    },
+    {
+      "groupId": "org.junit.jupiter",
+      "artifactId": "junit-jupiter-api",
+      "version": "5.10.2",
+      "scope": "runtime",
+      "type": "jar",
+      "optional": true
+    }
+  ]
+}
