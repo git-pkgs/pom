@@ -91,8 +91,14 @@ func run(args []string, stdin io.Reader, stdout io.Writer) error {
 	file := fs.String("f", "", "read root POM from file (use - for stdin)")
 	profiles := fs.String("profiles", "default", "profile mode: default | pessimistic | id1,id2,...")
 	follow := fs.Bool("relocate", false, "follow <relocation> and resolve the target")
+	asXML := fs.Bool("xml", false, "emit a minimal effective-pom XML instead of JSON")
 	timeout := fs.Duration("timeout", defaultTimeout, "overall timeout")
+	version := fs.Bool("version", false, "print version and exit")
 	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *version {
+		_, err := fmt.Fprintln(stdout, "pom", pom.Version)
 		return err
 	}
 
@@ -114,6 +120,9 @@ func run(args []string, stdin io.Reader, stdout io.Writer) error {
 		}
 	}
 
+	if *asXML {
+		return writeXML(stdout, ep)
+	}
 	enc := json.NewEncoder(stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(render(ep))

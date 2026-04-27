@@ -107,6 +107,35 @@ func TestRunFile(t *testing.T) {
 	}
 }
 
+func TestRunXML(t *testing.T) {
+	srv := newServer()
+	defer srv.Close()
+
+	var out bytes.Buffer
+	if err := run([]string{"-repo", srv.URL, "-xml", "-f", "-"}, strings.NewReader(childPOM), &out); err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	s := out.String()
+	for _, want := range []string{
+		`<?xml version="1.0" encoding="UTF-8"?>`,
+		`<groupId>org.x</groupId>`,
+		`<artifactId>child</artifactId>`,
+		`<version>1</version>`,
+		`<description>parent desc</description>`,
+		`<name>MIT</name>`,
+		`<lib.version>2.0</lib.version>`,
+		`<artifactId>b</artifactId>`,
+		`<version>2.0</version>`,
+	} {
+		if !strings.Contains(s, want) {
+			t.Errorf("xml output missing %q\n%s", want, s)
+		}
+	}
+	if strings.Contains(s, "<parent>") {
+		t.Errorf("xml output should not contain <parent> (already merged)\n%s", s)
+	}
+}
+
 func TestRunRelocate(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/old/a/1/a-1.pom", func(w http.ResponseWriter, r *http.Request) {
