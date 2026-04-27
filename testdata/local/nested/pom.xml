@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <groupId>org.missing</groupId>
+    <artifactId>elsewhere</artifactId>
+    <version>9.9</version>
+    <relativePath/>
+  </parent>
+  <artifactId>nested</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.lib</groupId>
+      <artifactId>lib</artifactId>
+    </dependency>
+  </dependencies>
+</project>

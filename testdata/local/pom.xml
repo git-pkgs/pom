@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <groupId>org.example</groupId>
+  <artifactId>parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <description>root</description>
+  <properties>
+    <jmh.version>1.37</jmh.version>
+    <lib.version>2.5</lib.version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.lib</groupId>
+        <artifactId>lib</artifactId>
+        <version>${lib.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

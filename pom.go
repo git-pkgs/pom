@@ -81,9 +81,23 @@ type POM struct {
 
 // Parent is the <parent> coordinate reference.
 type Parent struct {
-	GroupID    string `xml:"groupId"`
-	ArtifactID string `xml:"artifactId"`
-	Version    string `xml:"version"`
+	GroupID      string  `xml:"groupId"`
+	ArtifactID   string  `xml:"artifactId"`
+	Version      string  `xml:"version"`
+	RelativePath *string `xml:"relativePath"`
+}
+
+// DefaultRelativePath is what Maven assumes when <relativePath> is omitted.
+const DefaultRelativePath = "../pom.xml"
+
+// LocalPath returns the relative path to the parent POM, applying Maven's
+// default of "../pom.xml" when the element is absent. An explicit empty
+// element (<relativePath/>) means "skip local lookup" and returns "".
+func (p *Parent) LocalPath() string {
+	if p.RelativePath == nil {
+		return DefaultRelativePath
+	}
+	return strings.TrimSpace(*p.RelativePath)
 }
 
 func (p *Parent) GAV() GAV {
