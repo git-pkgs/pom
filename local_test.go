@@ -2,6 +2,8 @@ package pom
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -78,5 +80,60 @@ func TestParentLocalPath(t *testing.T) {
 		if got := p.LocalPath(); got != tt.want {
 			t.Errorf("LocalPath(%v) = %q want %q", tt.rp, got, tt.want)
 		}
+	}
+}
+
+func TestLocalFetcherRejectsAbsoluteRelativePath(t *testing.T) {
+	tmp := t.TempDir()
+	childDir := filepath.Join(tmp, "child")
+	_ = os.MkdirAll(childDir, 0o755)
+
+	targetPOM := filepath.Join(tmp, "target", "pom.xml")
+	_ = os.MkdirAll(filepath.Dir(targetPOM), 0o755)
+	_ = os.WriteFile(targetPOM, []byte(`<project><groupId>org.evil</groupId><artifactId>evil</artifactId><version>1.0</version></project>`), 0o644)
+
+	absPath := targetPOM
+	child := &POM{
+		GroupID:    "org.example",
+		ArtifactID: "child",
+		Version:    "1.0",
+		Parent:     &Parent{GroupID: "org.evil", ArtifactID: "evil", Version: "1.0", RelativePath: &absPath},
+	}
+
+	f := NewLocalFetcherFrom(child, childDir)
+	_, err := f.Fetch(context.Background(), GAV{"org.evil", "evil", "1.0"})
+	if err == nil {
+		t.Error("expected error: absolute relativePath should be rejected")
+	}
+}
+
+func TestLocalFetcherRejectsSymlink(t *testing.T) {
+	tmp := t.TempDir()
+	childDir := filepath.Join(tmp, "child")
+	_ = os.MkdirAll(childDir, 0o755)
+
+	// Create a target POM outside the project tree
+	outsideDir := filepath.Join(tmp, "outside")
+	_ = os.MkdirAll(outsideDir, 0o755)
+	_ = os.WriteFile(filepath.Join(outsideDir, "pom.xml"), []byte(`<project><groupId>org.evil</groupId><artifactId>evil</artifactId><version>1.0</version></project>`), 0o644)
+
+	// Create symlink from child/parent -> outside
+	symlink := filepath.Join(childDir, "parent")
+	if err := os.Symlink(outsideDir, symlink); err != nil {
+		t.Skipf("symlinks not supported: %v", err)
+	}
+
+	rel := "parent"
+	child := &POM{
+		GroupID:    "org.example",
+		ArtifactID: "child",
+		Version:    "1.0",
+		Parent:     &Parent{GroupID: "org.evil", ArtifactID: "evil", Version: "1.0", RelativePath: &rel},
+	}
+
+	f := NewLocalFetcherFrom(child, childDir)
+	_, err := f.Fetch(context.Background(), GAV{"org.evil", "evil", "1.0"})
+	if err == nil {
+		t.Error("expected error: symlink traversal should be rejected")
 	}
 }
