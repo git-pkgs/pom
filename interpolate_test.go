@@ -36,6 +36,17 @@ func TestInterpolate(t *testing.T) {
 	}
 }
 
+func TestInterpolateAmplificationCapped(t *testing.T) {
+	props := map[string]string{
+		"bomb": "${bomb}${bomb}${bomb}${bomb}${bomb}",
+	}
+	result := interpolate("${bomb}", props)
+	// Without the cap, 10 passes of 5x self-reference would produce ~68 MiB.
+	if len(result) > maxInterpolatedLength {
+		t.Fatalf("interpolated length %d exceeds cap %d", len(result), maxInterpolatedLength)
+	}
+}
+
 func TestFirstExpr(t *testing.T) {
 	tests := []struct {
 		in   string
