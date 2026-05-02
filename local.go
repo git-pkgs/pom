@@ -52,12 +52,23 @@ func (f *LocalFetcher) walk(p *POM, dir string) {
 			return
 		}
 		rel := p.Parent.LocalPath()
-		if rel == "" {
+		if rel == "" || filepath.IsAbs(rel) {
 			return
 		}
-		path := filepath.Join(dir, rel)
-		if fi, err := os.Stat(path); err == nil && fi.IsDir() {
+		path := filepath.Clean(filepath.Join(dir, rel))
+		fi, err := os.Lstat(path)
+		if err != nil {
+			return
+		}
+		if fi.Mode()&os.ModeSymlink != 0 {
+			return
+		}
+		if fi.IsDir() {
 			path = filepath.Join(path, "pom.xml")
+			fi, err = os.Lstat(path)
+			if err != nil || fi.Mode()&os.ModeSymlink != 0 {
+				return
+			}
 		}
 		parent, err := readPOMFile(path)
 		if err != nil {
