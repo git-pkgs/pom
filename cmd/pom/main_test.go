@@ -187,10 +187,10 @@ func TestParseProfiles(t *testing.T) {
 		in   string
 		want string
 	}{
-		{"default", "default"},
-		{"", "default"},
-		{"pessimistic", "pessimistic"},
-		{"all", "pessimistic"},
+		{profileDefault, profileDefault},
+		{"", profileDefault},
+		{profilePessimistic, profilePessimistic},
+		{"all", profilePessimistic},
 		{"a,b", "explicit"},
 	}
 	for _, tt := range tests {
@@ -198,9 +198,9 @@ func TestParseProfiles(t *testing.T) {
 		var name string
 		switch got.Mode {
 		case 0:
-			name = "default"
+			name = profileDefault
 		case 1:
-			name = "pessimistic"
+			name = profilePessimistic
 		default:
 			name = "explicit"
 		}

@@ -85,11 +85,16 @@ func main() {
 	}
 }
 
+const (
+	profileDefault     = "default"
+	profilePessimistic = "pessimistic"
+)
+
 func run(args []string, stdin io.Reader, stdout io.Writer) error {
 	fs := flag.NewFlagSet("pom", flag.ContinueOnError)
 	repo := fs.String("repo", pom.DefaultRepoURL, "Maven repository base URL")
 	file := fs.String("f", "", "read root POM from file (use - for stdin)")
-	profiles := fs.String("profiles", "default", "profile mode: default | pessimistic | id1,id2,...")
+	profiles := fs.String("profiles", profileDefault, "profile mode: default | pessimistic | id1,id2,...")
 	follow := fs.Bool("relocate", false, "follow <relocation> and resolve the target")
 	asXML := fs.Bool("xml", false, "emit a minimal effective-pom XML instead of JSON")
 	timeout := fs.Duration("timeout", defaultTimeout, "overall timeout")
@@ -183,9 +188,9 @@ func followRelocation(ctx context.Context, r *pom.Resolver, ep *pom.EffectivePOM
 
 func parseProfiles(s string) pom.ProfileActivation {
 	switch s {
-	case "", "default":
+	case "", profileDefault:
 		return pom.ProfileActivation{Mode: pom.OnlyDefault}
-	case "pessimistic", "all":
+	case profilePessimistic, "all":
 		return pom.ProfileActivation{Mode: pom.Pessimistic}
 	default:
 		return pom.ProfileActivation{Mode: pom.Explicit, IDs: strings.Split(s, ",")}
