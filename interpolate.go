@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-const maxInterpolationPasses = 10
+const (
+	maxInterpolationPasses  = 10
+	maxInterpolatedLength   = 1 << 20 // 1 MiB
+)
 
 var exprRE = regexp.MustCompile(`\$\{([^}]+)\}`)
 
@@ -18,15 +21,26 @@ func interpolate(s string, props map[string]string) string {
 	}
 	for range maxInterpolationPasses {
 		changed := false
+		capped := false
+		growth := 0
+		baseLen := len(s)
 		s = exprRE.ReplaceAllStringFunc(s, func(m string) string {
+			if capped {
+				return m
+			}
 			name := m[2 : len(m)-1]
 			if v, ok := lookup(props, name); ok {
+				growth += len(v) - len(m)
+				if baseLen+growth > maxInterpolatedLength {
+					capped = true
+					return m
+				}
 				changed = true
 				return v
 			}
 			return m
 		})
-		if !changed || !strings.Contains(s, "${") {
+		if capped || !changed || !strings.Contains(s, "${") {
 			break
 		}
 	}
