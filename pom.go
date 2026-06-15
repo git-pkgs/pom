@@ -10,6 +10,7 @@ package pom
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -244,10 +245,22 @@ func (p *Properties) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 	return nil
 }
 
+// MaxPOMBytes is the largest POM ParsePOM will accept and the read limit
+// applied by the bundled fetchers. The largest POM on Maven Central is well
+// under 1 MB; 10 MB leaves headroom for generated dependency lists while
+// keeping a single hostile file from exhausting memory.
+var MaxPOMBytes int64 = 10 << 20
+
+// ErrPOMTooLarge is returned by ParsePOM when the input exceeds MaxPOMBytes.
+var ErrPOMTooLarge = errors.New("pom: input exceeds MaxPOMBytes")
+
 // ParsePOM decodes a POM from XML bytes. It is lenient about charset
 // declarations and strict-mode failures that would otherwise reject
 // real-world POMs published to Maven Central.
 func ParsePOM(data []byte) (*POM, error) {
+	if int64(len(data)) > MaxPOMBytes {
+		return nil, ErrPOMTooLarge
+	}
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	dec.Strict = false
 	dec.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
