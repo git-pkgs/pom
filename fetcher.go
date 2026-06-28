@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -62,7 +61,7 @@ func (f *HTTPFetcher) FetchBytes(ctx context.Context, gav GAV) ([]byte, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http %d for %s", resp.StatusCode, req.URL)
 	}
-	return io.ReadAll(resp.Body)
+	return io.ReadAll(io.LimitReader(resp.Body, MaxPOMBytes+1))
 }
 
 // POMURL builds the repository URL for gav's POM under base.
@@ -81,12 +80,7 @@ type DirFetcher struct {
 }
 
 func (f *DirFetcher) Fetch(_ context.Context, gav GAV) (*POM, error) {
-	path := filepath.Join(f.Dir, FixtureName(gav))
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePOM(data)
+	return readPOMFile(filepath.Join(f.Dir, FixtureName(gav)))
 }
 
 // FixtureName returns the on-disk filename DirFetcher expects for gav.
