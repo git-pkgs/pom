@@ -1,6 +1,14 @@
 package pom
 
-import "testing"
+import (
+	"bytes"
+	"encoding/xml"
+	"io"
+	"os"
+	"path/filepath"
+	"reflect"
+	"testing"
+)
 
 func TestParsePOM(t *testing.T) {
 	src := []byte(`<?xml version="1.0" encoding="ISO-8859-1"?>
@@ -107,6 +115,80 @@ func TestParsePOMError(t *testing.T) {
 	if _, err := ParsePOM([]byte("not xml at all <<<")); err == nil {
 		t.Error("expected parse error")
 	}
+}
+
+func TestParsePOMMatchesXMLDecoder(t *testing.T) {
+	files, err := filepath.Glob("testdata/poms/*.pom")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range files {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want, err := decodePOMReflect(data)
+		if err != nil {
+			t.Fatalf("reference parse %s: %v", path, err)
+		}
+		got, err := ParsePOM(data)
+		if err != nil {
+			t.Fatalf("ParsePOM %s: %v", path, err)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("ParsePOM %s differs from encoding/xml", path)
+		}
+	}
+}
+
+func TestParsePOMMatchesXMLDecoderErrors(t *testing.T) {
+	inputs := []string{
+		"",
+		"plain text",
+		"<not-project/>",
+		"<project><groupId>",
+		"<project><dependencies><dependency></project>",
+		"<project>&unknown;</project>",
+		"<project/><project/>",
+	}
+	for _, input := range inputs {
+		_, wantErr := decodePOMReflect([]byte(input))
+		_, gotErr := ParsePOM([]byte(input))
+		if (gotErr != nil) != (wantErr != nil) {
+			t.Errorf("ParsePOM(%q) error = %v, reference error = %v", input, gotErr, wantErr)
+		}
+	}
+}
+
+func TestParsePOMMatchesXMLDecoderNestedText(t *testing.T) {
+	data := []byte(`<project>
+		<groupId>before<ignored>nested</ignored>after</groupId>
+		<properties><value>left<ignored>nested</ignored>right</value></properties>
+	</project>`)
+	want, err := decodePOMReflect(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := ParsePOM(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("ParsePOM nested text = %+v, want %+v", got, want)
+	}
+}
+
+func decodePOMReflect(data []byte) (*POM, error) {
+	dec := xml.NewDecoder(bytes.NewReader(data))
+	dec.Strict = false
+	dec.CharsetReader = func(_ string, input io.Reader) (io.Reader, error) {
+		return input, nil
+	}
+	var p POM
+	if err := dec.Decode(&p); err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
 func TestManagementKey(t *testing.T) {

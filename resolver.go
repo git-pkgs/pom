@@ -69,14 +69,20 @@ type Fetcher interface {
 // through one place.
 type Resolver struct {
 	fetcher Fetcher
-	cache   map[GAV]*EffectivePOM
+	cache   map[GAV]cachedModels
+}
+
+type cachedModels struct {
+	defaults    *EffectivePOM
+	pessimistic *EffectivePOM
+	bom         *EffectivePOM
 }
 
 // NewResolver constructs a Resolver around f. Resolved POMs are memoised
 // for the lifetime of the Resolver since released coordinates are
 // immutable.
 func NewResolver(f Fetcher) *Resolver {
-	return &Resolver{fetcher: f, cache: map[GAV]*EffectivePOM{}}
+	return &Resolver{fetcher: f, cache: map[GAV]cachedModels{}}
 }
 
 // Options tunes a single Resolve call.
@@ -149,7 +155,7 @@ func (d ResolvedDep) GAV() GAV {
 
 // Resolve fetches gav and computes its effective POM under opts.
 func (r *Resolver) Resolve(ctx context.Context, gav GAV, opts Options) (*EffectivePOM, error) {
-	if ep, ok := r.cache[gav]; ok {
+	if ep := r.cachedModel(gav, opts.Profiles); ep != nil {
 		return ep, nil
 	}
 	root, err := r.fetcher.Fetch(ctx, gav)
@@ -160,8 +166,43 @@ func (r *Resolver) Resolve(ctx context.Context, gav GAV, opts Options) (*Effecti
 	if err != nil {
 		return nil, err
 	}
-	r.cache[gav] = ep
+	r.cacheModel(gav, opts.Profiles, ep)
 	return ep, nil
+}
+
+func (r *Resolver) cachedModel(gav GAV, activation ProfileActivation) *EffectivePOM {
+	models := r.cache[gav]
+	switch activation.Mode {
+	case Pessimistic:
+		return models.pessimistic
+	case Explicit:
+		if len(activation.IDs) != 0 {
+			return nil
+		}
+		return models.defaults
+	case OnlyDefault:
+		fallthrough
+	default:
+		return models.defaults
+	}
+}
+
+func (r *Resolver) cacheModel(gav GAV, activation ProfileActivation, ep *EffectivePOM) {
+	models := r.cache[gav]
+	switch activation.Mode {
+	case Pessimistic:
+		models.pessimistic = ep
+	case Explicit:
+		if len(activation.IDs) != 0 {
+			return
+		}
+		models.defaults = ep
+	case OnlyDefault:
+		fallthrough
+	default:
+		models.defaults = ep
+	}
+	r.cache[gav] = models
 }
 
 // ResolvePOM computes the effective POM for an already-parsed root POM.
@@ -170,7 +211,7 @@ func (r *Resolver) Resolve(ctx context.Context, gav GAV, opts Options) (*Effecti
 func (r *Resolver) ResolvePOM(ctx context.Context, root *POM, opts Options) (*EffectivePOM, error) {
 	chain, warnings := r.parentChain(ctx, root)
 
-	m := newMerger(opts.Profiles)
+	m := newMerger(opts.Profiles, chain)
 	parentFailed := len(warnings) > 0
 	for _, p := range chain {
 		m.apply(p)
@@ -279,15 +320,16 @@ func (r *Resolver) expandBOMs(ctx context.Context, m *merger, depth int) []strin
 }
 
 func (r *Resolver) resolveBOM(ctx context.Context, gav GAV, depth int) (*EffectivePOM, error) {
-	if ep, ok := r.cache[gav]; ok {
-		return ep, nil
+	models := r.cache[gav]
+	if models.bom != nil {
+		return models.bom, nil
 	}
 	root, err := r.fetcher.Fetch(ctx, gav)
 	if err != nil {
 		return nil, err
 	}
 	chain, warnings := r.parentChain(ctx, root)
-	m := newMerger(ProfileActivation{Mode: OnlyDefault})
+	m := newMerger(ProfileActivation{Mode: OnlyDefault}, chain)
 	for _, p := range chain {
 		m.apply(p)
 	}
@@ -301,7 +343,9 @@ func (r *Resolver) resolveBOM(ctx context.Context, gav GAV, depth int) (*Effecti
 		DependencyManagement: m.depMgmt,
 		Warnings:             warnings,
 	}
-	r.cache[gav] = ep
+	models = r.cache[gav]
+	models.bom = ep
+	r.cache[gav] = models
 	return ep, nil
 }
 
@@ -324,21 +368,63 @@ type merger struct {
 
 	deps     []Dep
 	depKeys  map[string]int
-	depProf  map[string]string
-	profDefs map[string]bool
+	depProf  []string
+	profDefs map[string]struct{}
 
 	activeProfiles []string
 }
 
-func newMerger(act ProfileActivation) *merger {
-	return &merger{
+func newMerger(act ProfileActivation, chain []*POM) *merger {
+	props, managed, imports, deps, profileDefs, activeProfiles := mergerCapacities(act, chain)
+	m := &merger{
 		activation: act,
-		props:      map[string]string{},
-		depMgmt:    map[string]Dep{},
-		depKeys:    map[string]int{},
-		depProf:    map[string]string{},
-		profDefs:   map[string]bool{},
+		props:      make(map[string]string, props),
+		depMgmt:    make(map[string]Dep, managed),
+		depKeys:    make(map[string]int, deps),
+		profDefs:   make(map[string]struct{}, profileDefs),
 	}
+	if imports != 0 {
+		m.imports = make([]Dep, 0, imports)
+	}
+	if deps != 0 {
+		m.deps = make([]Dep, 0, deps)
+		m.depProf = make([]string, 0, deps)
+	}
+	if activeProfiles != 0 {
+		m.activeProfiles = make([]string, 0, activeProfiles)
+	}
+	return m
+}
+
+func mergerCapacities(act ProfileActivation, chain []*POM) (props, managed, imports, deps, profileDefs, activeProfiles int) {
+	for _, p := range chain {
+		props += len(p.Properties)
+		managed += len(p.DependencyManagement.Dependencies)
+		for _, d := range p.DependencyManagement.Dependencies {
+			if d.Scope == scopeImport {
+				imports++
+			}
+		}
+		deps += len(p.Dependencies)
+		for i := range p.Profiles {
+			profile := &p.Profiles[i]
+			if !act.active(profile) {
+				profileDefs += len(profile.Properties)
+				continue
+			}
+			activeProfiles++
+			props += len(profile.Properties)
+			managed += len(profile.DependencyManagement.Dependencies)
+			for _, d := range profile.DependencyManagement.Dependencies {
+				if d.Scope == scopeImport {
+					imports++
+				}
+			}
+			deps += len(profile.Dependencies)
+		}
+	}
+	managed -= imports
+	return props, managed, imports, deps, profileDefs, activeProfiles
 }
 
 // apply merges one POM into the accumulator. Called root-first, so later
@@ -405,7 +491,7 @@ func (m *merger) interpolateSCM() SCM {
 
 func (m *merger) recordProfileGated(pr *Profile) {
 	for k := range pr.Properties {
-		m.profDefs[k] = true
+		m.profDefs[k] = struct{}{}
 	}
 }
 
@@ -434,15 +520,13 @@ func (m *merger) mergeDeps(entries []Dep, profile string) {
 		if i, ok := m.depKeys[k]; ok {
 			m.deps[i] = overlayDep(m.deps[i], d)
 			if profile != "" {
-				m.depProf[k] = profile
+				m.depProf[i] = profile
 			}
 			continue
 		}
 		m.depKeys[k] = len(m.deps)
 		m.deps = append(m.deps, d)
-		if profile != "" {
-			m.depProf[k] = profile
-		}
+		m.depProf = append(m.depProf, profile)
 	}
 }
 
@@ -516,6 +600,20 @@ func (m *merger) interpolateProps() {
 }
 
 func (m *merger) interpolateDepMgmt() {
+	for _, d := range m.depMgmt {
+		if containsExpr(d.GroupID) || containsExpr(d.ArtifactID) || containsExpr(d.Type) || containsExpr(d.Classifier) {
+			m.interpolateDepMgmtKeys()
+			return
+		}
+	}
+	for key, d := range m.depMgmt {
+		d.Version = interpolate(d.Version, m.props)
+		d.Scope = interpolate(d.Scope, m.props)
+		m.depMgmt[key] = d
+	}
+}
+
+func (m *merger) interpolateDepMgmtKeys() {
 	out := make(map[string]Dep, len(m.depMgmt))
 	for _, d := range m.depMgmt {
 		d.GroupID = interpolate(d.GroupID, m.props)
@@ -531,15 +629,14 @@ func (m *merger) interpolateDepMgmt() {
 
 func (m *merger) resolveDeps(parentFailed bool) []ResolvedDep {
 	out := make([]ResolvedDep, 0, len(m.deps))
-	for _, d := range m.deps {
-		rd := m.resolveDep(d, parentFailed)
+	for i, d := range m.deps {
+		rd := m.resolveDep(d, parentFailed, m.depProf[i])
 		out = append(out, rd)
 	}
 	return out
 }
 
-func (m *merger) resolveDep(d Dep, parentFailed bool) ResolvedDep {
-	rawKey := d.managementKey()
+func (m *merger) resolveDep(d Dep, parentFailed bool, profile string) ResolvedDep {
 	d.GroupID = interpolate(d.GroupID, m.props)
 	d.ArtifactID = interpolate(d.ArtifactID, m.props)
 	d.Type = interpolate(d.Type, m.props)
@@ -569,7 +666,7 @@ func (m *merger) resolveDep(d Dep, parentFailed bool) ResolvedDep {
 		Scope:      defaultScope(d.Scope),
 		Optional:   strings.EqualFold(strings.TrimSpace(d.Optional), "true"),
 		Exclusions: d.Exclusions,
-		Profile:    m.depProf[rawKey],
+		Profile:    profile,
 	}
 
 	rd.Resolution, rd.Expression = m.classify(d, rawVersion, parentFailed)
@@ -610,13 +707,18 @@ func (m *merger) classifyExpr(s string, parentFailed bool) (Resolution, string) 
 	switch {
 	case strings.HasPrefix(name, "env."):
 		return UnresolvedEnv, s
-	case m.profDefs[name]:
+	case hasKey(m.profDefs, name):
 		return UnresolvedProfileGated, s
 	case parentFailed:
 		return UnresolvedParent, s
 	default:
 		return UnresolvedProperty, s
 	}
+}
+
+func hasKey[K comparable, V any](m map[K]V, key K) bool {
+	_, ok := m[key]
+	return ok
 }
 
 func defaultType(t string) string {

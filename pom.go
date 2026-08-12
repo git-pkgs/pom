@@ -266,11 +266,11 @@ func ParsePOM(data []byte) (*POM, error) {
 	dec.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
 		return input, nil
 	}
-	var p POM
-	if err := dec.Decode(&p); err != nil {
+	p, err := decodePOM(dec)
+	if err != nil {
 		return nil, fmt.Errorf("pom: parse pom: %w", err)
 	}
-	return &p, nil
+	return p, nil
 }
 
 // EffectiveGAV returns the POM's own coordinates, falling back to the
