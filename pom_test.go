@@ -141,6 +141,21 @@ func TestParsePOMMatchesXMLDecoder(t *testing.T) {
 	}
 }
 
+func TestParsePOMMatchesXMLDecoderWithUTF8BOM(t *testing.T) {
+	data := []byte("\xEF\xBB\xBF<?xml version=\"1.0\"?><project><groupId>org.example</groupId></project>")
+	want, err := decodePOMReflect(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := ParsePOM(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("ParsePOM with UTF-8 BOM = %+v, want %+v", got, want)
+	}
+}
+
 func TestParsePOMMatchesXMLDecoderErrors(t *testing.T) {
 	inputs := []string{
 		"",

@@ -261,6 +261,7 @@ func ParsePOM(data []byte) (*POM, error) {
 	if int64(len(data)) > MaxPOMBytes {
 		return nil, ErrPOMTooLarge
 	}
+	data = bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	dec.Strict = false
 	dec.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
