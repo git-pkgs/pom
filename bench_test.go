@@ -4,7 +4,17 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
+)
+
+const (
+	benchmarkParentDepth       = 16
+	benchmarkBOMCount          = 6
+	benchmarkManagedDepsPerBOM = 40
+	benchmarkPropertyCount     = 128
+	benchmarkManagedDepCount   = 256
+	benchmarkArtifactCount     = 64
 )
 
 // memFetcher preloads every fixture POM into memory so benchmarks measure
@@ -135,6 +145,169 @@ func BenchmarkResolveCorpus(b *testing.B) {
 			}
 		}
 	}
+}
+
+func BenchmarkResolveDeepParents(b *testing.B) {
+	f, root := benchmarkDeepParents()
+	ctx := context.Background()
+	b.ResetTimer()
+	for b.Loop() {
+		if _, err := NewResolver(f).Resolve(ctx, root, Options{}); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkResolveImportedBOMs(b *testing.B) {
+	f, root := benchmarkImportedBOMs()
+	ctx := context.Background()
+	b.ResetTimer()
+	for b.Loop() {
+		if _, err := NewResolver(f).Resolve(ctx, root, Options{}); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkResolveRepeatedProperties(b *testing.B) {
+	f, root := benchmarkRepeatedProperties()
+	ctx := context.Background()
+	b.ResetTimer()
+	for b.Loop() {
+		if _, err := NewResolver(f).Resolve(ctx, root, Options{}); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkResolveDependencyManagement(b *testing.B) {
+	f, root := benchmarkDependencyManagement()
+	ctx := context.Background()
+	b.ResetTimer()
+	for b.Loop() {
+		if _, err := NewResolver(f).Resolve(ctx, root, Options{}); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkResolveManyArtifacts(b *testing.B) {
+	f, roots := benchmarkManyArtifacts()
+	ctx := context.Background()
+	b.ResetTimer()
+	for b.Loop() {
+		r := NewResolver(f)
+		for _, root := range roots {
+			if _, err := r.Resolve(ctx, root, Options{}); err != nil {
+				b.Fatal(err)
+			}
+		}
+	}
+}
+
+func benchmarkDeepParents() (memFetcher, GAV) {
+	f := memFetcher{}
+	var parent *Parent
+	for i := range benchmarkParentDepth {
+		id := "parent-" + strconv.Itoa(i)
+		gav := GAV{GroupID: "org.example", ArtifactID: id, Version: "1"}
+		p := &POM{
+			GroupID:    gav.GroupID,
+			ArtifactID: gav.ArtifactID,
+			Version:    gav.Version,
+			Parent:     parent,
+			Properties: Properties{"shared.version": strconv.Itoa(i + 1)},
+			Dependencies: []Dep{{
+				GroupID: "org.example.lib", ArtifactID: "lib-" + strconv.Itoa(i),
+			}},
+			DependencyManagement: DepMgmt{Dependencies: []Dep{{
+				GroupID: "org.example.lib", ArtifactID: "lib-" + strconv.Itoa(i), Version: "${shared.version}",
+			}}},
+		}
+		f[gav] = p
+		parent = &Parent{GroupID: gav.GroupID, ArtifactID: gav.ArtifactID, Version: gav.Version}
+	}
+	root := GAV{GroupID: "org.example", ArtifactID: "deep-app", Version: "1"}
+	f[root] = &POM{GroupID: root.GroupID, ArtifactID: root.ArtifactID, Version: root.Version, Parent: parent}
+	return f, root
+}
+
+func benchmarkImportedBOMs() (memFetcher, GAV) {
+	f := memFetcher{}
+	imports := make([]Dep, 0, benchmarkBOMCount)
+	deps := make([]Dep, 0, benchmarkBOMCount*benchmarkManagedDepsPerBOM)
+	for i := range benchmarkBOMCount {
+		bom := GAV{GroupID: "org.example.bom", ArtifactID: "bom-" + strconv.Itoa(i), Version: "1"}
+		managed := make([]Dep, 0, benchmarkManagedDepsPerBOM)
+		for j := range benchmarkManagedDepsPerBOM {
+			artifact := "lib-" + strconv.Itoa(i) + "-" + strconv.Itoa(j)
+			managed = append(managed, Dep{GroupID: "org.example.lib", ArtifactID: artifact, Version: "1." + strconv.Itoa(j)})
+			deps = append(deps, Dep{GroupID: "org.example.lib", ArtifactID: artifact})
+		}
+		f[bom] = &POM{GroupID: bom.GroupID, ArtifactID: bom.ArtifactID, Version: bom.Version, DependencyManagement: DepMgmt{Dependencies: managed}}
+		imports = append(imports, Dep{GroupID: bom.GroupID, ArtifactID: bom.ArtifactID, Version: bom.Version, Type: "pom", Scope: scopeImport})
+	}
+	root := GAV{GroupID: "org.example", ArtifactID: "bom-app", Version: "1"}
+	f[root] = &POM{
+		GroupID: root.GroupID, ArtifactID: root.ArtifactID, Version: root.Version,
+		DependencyManagement: DepMgmt{Dependencies: imports}, Dependencies: deps,
+	}
+	return f, root
+}
+
+func benchmarkRepeatedProperties() (memFetcher, GAV) {
+	props := make(Properties, benchmarkPropertyCount)
+	props["property.0"] = "1.0.0"
+	for i := 1; i < benchmarkPropertyCount; i++ {
+		props["property."+strconv.Itoa(i)] = "${property." + strconv.Itoa(i-1) + "}"
+	}
+	deps := make([]Dep, benchmarkPropertyCount)
+	for i := range deps {
+		deps[i] = Dep{GroupID: "org.example.lib", ArtifactID: "lib-" + strconv.Itoa(i), Version: "${property.127}"}
+	}
+	root := GAV{GroupID: "org.example", ArtifactID: "property-app", Version: "1"}
+	f := memFetcher{root: {
+		GroupID: root.GroupID, ArtifactID: root.ArtifactID, Version: root.Version,
+		Properties: props, Dependencies: deps,
+	}}
+	return f, root
+}
+
+func benchmarkDependencyManagement() (memFetcher, GAV) {
+	managed := make([]Dep, benchmarkManagedDepCount)
+	deps := make([]Dep, benchmarkManagedDepCount)
+	for i := range benchmarkManagedDepCount {
+		artifact := "lib-" + strconv.Itoa(i)
+		managed[i] = Dep{GroupID: "org.example.lib", ArtifactID: artifact, Version: "${shared.version}", Scope: "runtime"}
+		deps[i] = Dep{GroupID: "org.example.lib", ArtifactID: artifact}
+	}
+	root := GAV{GroupID: "org.example", ArtifactID: "managed-app", Version: "1"}
+	f := memFetcher{root: {
+		GroupID: root.GroupID, ArtifactID: root.ArtifactID, Version: root.Version,
+		Properties:           Properties{"shared.version": "2.0.0"},
+		DependencyManagement: DepMgmt{Dependencies: managed}, Dependencies: deps,
+	}}
+	return f, root
+}
+
+func benchmarkManyArtifacts() (memFetcher, []GAV) {
+	f, bomRoot := benchmarkImportedBOMs()
+	parent := GAV{GroupID: "org.example", ArtifactID: "shared-parent", Version: "1"}
+	f[parent] = &POM{
+		GroupID: parent.GroupID, ArtifactID: parent.ArtifactID, Version: parent.Version,
+		DependencyManagement: f[bomRoot].DependencyManagement,
+	}
+	roots := make([]GAV, benchmarkArtifactCount)
+	for i := range roots {
+		root := GAV{GroupID: "org.example", ArtifactID: "app-" + strconv.Itoa(i), Version: "1"}
+		roots[i] = root
+		f[root] = &POM{
+			GroupID: root.GroupID, ArtifactID: root.ArtifactID, Version: root.Version,
+			Parent:       &Parent{GroupID: parent.GroupID, ArtifactID: parent.ArtifactID, Version: parent.Version},
+			Dependencies: []Dep{{GroupID: "org.example.lib", ArtifactID: "lib-0-0"}},
+		}
+	}
+	return f, roots
 }
 
 func splitFixtureName(s string) [3]string {

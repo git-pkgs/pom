@@ -347,6 +347,97 @@ func TestResolverCacheAndError(t *testing.T) {
 	}
 }
 
+func TestResolverCacheSeparatesProfileModes(t *testing.T) {
+	f := mapFetcher{
+		"org.x:app:1": `<project>
+			<groupId>org.x</groupId><artifactId>app</artifactId><version>1</version>
+			<profiles><profile><id>extra</id><dependencies>
+				<dependency><groupId>org.x</groupId><artifactId>extra</artifactId><version>1</version></dependency>
+			</dependencies></profile></profiles>
+		</project>`,
+	}
+	r := NewResolver(f)
+	ctx := context.Background()
+	gav := GAV{"org.x", "app", "1"}
+	defaults, err := r.Resolve(ctx, gav, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pessimistic, err := r.Resolve(ctx, gav, Options{Profiles: ProfileActivation{Mode: Pessimistic}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(defaults.Dependencies) != 0 || len(pessimistic.Dependencies) != 1 {
+		t.Fatalf("profile modes shared a cache entry: default=%d pessimistic=%d", len(defaults.Dependencies), len(pessimistic.Dependencies))
+	}
+	again, err := r.Resolve(ctx, gav, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if again != defaults {
+		t.Error("same profile mode should reuse its cached model")
+	}
+}
+
+func TestResolverDoesNotCacheNamedProfiles(t *testing.T) {
+	f := mapFetcher{
+		"org.x:app:1": `<project>
+			<groupId>org.x</groupId><artifactId>app</artifactId><version>1</version>
+			<profiles>
+				<profile><id>one</id><dependencies><dependency><groupId>org.x</groupId><artifactId>one</artifactId><version>1</version></dependency></dependencies></profile>
+				<profile><id>two</id><dependencies><dependency><groupId>org.x</groupId><artifactId>two</artifactId><version>1</version></dependency></dependencies></profile>
+			</profiles>
+		</project>`,
+	}
+	r := NewResolver(f)
+	ctx := context.Background()
+	gav := GAV{"org.x", "app", "1"}
+	one, err := r.Resolve(ctx, gav, Options{Profiles: ProfileActivation{Mode: Explicit, IDs: []string{"one"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	two, err := r.Resolve(ctx, gav, Options{Profiles: ProfileActivation{Mode: Explicit, IDs: []string{"two"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if depByGA(one, "org.x:one") == nil || depByGA(one, "org.x:two") != nil {
+		t.Errorf("explicit profile one: %+v", one.Dependencies)
+	}
+	if depByGA(two, "org.x:two") == nil || depByGA(two, "org.x:one") != nil {
+		t.Errorf("explicit profile two: %+v", two.Dependencies)
+	}
+}
+
+func TestResolverCacheSeparatesBOMModel(t *testing.T) {
+	f := mapFetcher{
+		"org.x:bom:1": `<project>
+			<groupId>org.x</groupId><artifactId>bom</artifactId><version>1</version>
+			<profiles><profile><id>extra</id><dependencyManagement><dependencies>
+				<dependency><groupId>org.x</groupId><artifactId>extra</artifactId><version>1</version></dependency>
+			</dependencies></dependencyManagement></profile></profiles>
+		</project>`,
+		"org.x:app:1": `<project>
+			<groupId>org.x</groupId><artifactId>app</artifactId><version>1</version>
+			<dependencyManagement><dependencies><dependency>
+				<groupId>org.x</groupId><artifactId>bom</artifactId><version>1</version><type>pom</type><scope>import</scope>
+			</dependency></dependencies></dependencyManagement>
+			<dependencies><dependency><groupId>org.x</groupId><artifactId>extra</artifactId></dependency></dependencies>
+		</project>`,
+	}
+	r := NewResolver(f)
+	ctx := context.Background()
+	if _, err := r.Resolve(ctx, GAV{"org.x", "bom", "1"}, Options{Profiles: ProfileActivation{Mode: Pessimistic}}); err != nil {
+		t.Fatal(err)
+	}
+	app, err := r.Resolve(ctx, GAV{"org.x", "app", "1"}, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dep := depByGA(app, "org.x:extra"); dep == nil || dep.Resolution != UnresolvedMissing {
+		t.Errorf("default BOM import reused pessimistic root model: %+v", dep)
+	}
+}
+
 func TestLookupManagedFallback(t *testing.T) {
 	f := mapFetcher{
 		"org.x:app:1": `<project>
