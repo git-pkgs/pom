@@ -89,7 +89,7 @@ func wholeExpression(s string, props map[string]string) (string, bool) {
 		return "", false
 	}
 	close := strings.IndexByte(s[len(expressionStart):], '}')
-	if close != len(s)-len(expressionStart)-1 || close == 0 {
+	if close < 0 || close != len(s)-len(expressionStart)-1 || close == 0 {
 		return "", false
 	}
 	return lookup(props, s[len(expressionStart):len(s)-1])
