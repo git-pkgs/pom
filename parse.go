@@ -78,6 +78,8 @@ func decodeProject(dec *xml.Decoder, start xml.StartElement, p *POM) error {
 				err = decodeDependencies(dec, tok, &p.Dependencies)
 			case "dependencyManagement":
 				err = decodeDepMgmt(dec, tok, &p.DependencyManagement)
+			case "build":
+				err = decodeBuild(dec, tok, &p.Build)
 			case "profiles":
 				err = decodeProfiles(dec, tok, &p.Profiles)
 			default:
@@ -251,6 +253,96 @@ func decodeDep(dec *xml.Decoder, start xml.StartElement) (Dep, error) {
 	return dep, err
 }
 
+func decodeBuild(dec *xml.Decoder, start xml.StartElement, build *Build) error {
+	return decodeFields(dec, start, func(child xml.StartElement) error {
+		switch child.Name.Local {
+		case "plugins":
+			return decodePlugins(dec, child, &build.Plugins)
+		case "pluginManagement":
+			return decodePluginManagement(dec, child, &build.PluginManagement)
+		case "extensions":
+			return decodeExtensions(dec, child, &build.Extensions)
+		default:
+			return dec.Skip()
+		}
+	})
+}
+
+func decodePlugins(dec *xml.Decoder, start xml.StartElement, plugins *[]Plugin) error {
+	return decodeFields(dec, start, func(child xml.StartElement) error {
+		if child.Name.Local != "plugin" {
+			return dec.Skip()
+		}
+		plugin, err := decodePlugin(dec, child)
+		if err == nil {
+			*plugins = append(*plugins, plugin)
+		}
+		return err
+	})
+}
+
+func decodePluginManagement(dec *xml.Decoder, start xml.StartElement, management *PluginManagement) error {
+	return decodeFields(dec, start, func(child xml.StartElement) error {
+		if child.Name.Local != "plugins" {
+			return dec.Skip()
+		}
+		return decodePlugins(dec, child, &management.Plugins)
+	})
+}
+
+func decodePlugin(dec *xml.Decoder, start xml.StartElement) (Plugin, error) {
+	var plugin Plugin
+	err := decodeFields(dec, start, func(child xml.StartElement) error {
+		var err error
+		switch child.Name.Local {
+		case elementGroupID:
+			plugin.GroupID, err = decodeText(dec, child)
+		case elementArtifactID:
+			plugin.ArtifactID, err = decodeText(dec, child)
+		case elementVersion:
+			plugin.Version, err = decodeText(dec, child)
+		case elementDependencies:
+			err = decodeDependencies(dec, child, &plugin.Dependencies)
+		default:
+			err = dec.Skip()
+		}
+		return err
+	})
+	return plugin, err
+}
+
+func decodeExtensions(dec *xml.Decoder, start xml.StartElement, extensions *[]Extension) error {
+	return decodeFields(dec, start, func(child xml.StartElement) error {
+		if child.Name.Local != "extension" {
+			return dec.Skip()
+		}
+		extension, err := decodeExtension(dec, child)
+		if err == nil {
+			*extensions = append(*extensions, extension)
+		}
+		return err
+	})
+}
+
+func decodeExtension(dec *xml.Decoder, start xml.StartElement) (Extension, error) {
+	var extension Extension
+	err := decodeFields(dec, start, func(child xml.StartElement) error {
+		var err error
+		switch child.Name.Local {
+		case elementGroupID:
+			extension.GroupID, err = decodeText(dec, child)
+		case elementArtifactID:
+			extension.ArtifactID, err = decodeText(dec, child)
+		case elementVersion:
+			extension.Version, err = decodeText(dec, child)
+		default:
+			err = dec.Skip()
+		}
+		return err
+	})
+	return extension, err
+}
+
 func decodeExclusions(dec *xml.Decoder, start xml.StartElement, exclusions *[]Exclusion) error {
 	return decodeFields(dec, start, func(child xml.StartElement) error {
 		if child.Name.Local != "exclusion" {
@@ -304,6 +396,8 @@ func decodeProfile(dec *xml.Decoder, start xml.StartElement) (Profile, error) {
 			err = decodeDependencies(dec, child, &profile.Dependencies)
 		case "dependencyManagement":
 			err = decodeDepMgmt(dec, child, &profile.DependencyManagement)
+		case "build":
+			err = decodeBuild(dec, child, &profile.Build)
 		default:
 			err = dec.Skip()
 		}

@@ -53,8 +53,9 @@ func ParseGAV(s string) (GAV, error) {
 	return g, nil
 }
 
-// POM is the parsed subset of a project object model that the resolver
-// cares about. Fields are raw (uninterpolated) as read from XML.
+// POM is the parsed subset of a project object model used for dependency
+// resolution and source-level coordinate inspection. Fields are raw
+// (uninterpolated) as read from XML.
 type POM struct {
 	XMLName xml.Name `xml:"project"`
 
@@ -76,6 +77,7 @@ type POM struct {
 	Properties           Properties `xml:"properties"`
 	Dependencies         []Dep      `xml:"dependencies>dependency"`
 	DependencyManagement DepMgmt    `xml:"dependencyManagement"`
+	Build                Build      `xml:"build"`
 
 	Profiles []Profile `xml:"profiles>profile"`
 }
@@ -169,6 +171,33 @@ type Dep struct {
 	Exclusions []Exclusion `xml:"exclusions>exclusion"`
 }
 
+// Build is the coordinate-bearing subset of a project's <build> block.
+type Build struct {
+	Plugins          []Plugin         `xml:"plugins>plugin"`
+	PluginManagement PluginManagement `xml:"pluginManagement"`
+	Extensions       []Extension      `xml:"extensions>extension"`
+}
+
+// PluginManagement wraps the plugins declared under <pluginManagement>.
+type PluginManagement struct {
+	Plugins []Plugin `xml:"plugins>plugin"`
+}
+
+// Plugin is a build plugin coordinate and its directly declared dependencies.
+type Plugin struct {
+	GroupID      string `xml:"groupId"`
+	ArtifactID   string `xml:"artifactId"`
+	Version      string `xml:"version"`
+	Dependencies []Dep  `xml:"dependencies>dependency"`
+}
+
+// Extension is a build extension coordinate.
+type Extension struct {
+	GroupID    string `xml:"groupId"`
+	ArtifactID string `xml:"artifactId"`
+	Version    string `xml:"version"`
+}
+
 // Exclusion is a <exclusion> entry under a dependency.
 type Exclusion struct {
 	GroupID    string `xml:"groupId"`
@@ -196,6 +225,7 @@ type Profile struct {
 	Properties           Properties `xml:"properties"`
 	Dependencies         []Dep      `xml:"dependencies>dependency"`
 	DependencyManagement DepMgmt    `xml:"dependencyManagement"`
+	Build                Build      `xml:"build"`
 }
 
 // Activation holds the parts of <activation> relevant to static evaluation.

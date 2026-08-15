@@ -89,6 +89,86 @@ func TestParsePOM(t *testing.T) {
 	}
 }
 
+func TestParsePOMBuildCoordinates(t *testing.T) {
+	src := []byte(`<project>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>4.0.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>plugin-runtime</artifactId>
+            <version>1.0.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.example</groupId>
+          <artifactId>managed-plugin</artifactId>
+          <version>2.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.example</groupId>
+        <artifactId>extension</artifactId>
+        <version>3.0.0</version>
+      </extension>
+    </extensions>
+  </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.example</groupId>
+            <artifactId>profile-plugin</artifactId>
+            <version>4.0.0</version>
+          </plugin>
+        </plugins>
+        <extensions>
+          <extension>
+            <groupId>org.example</groupId>
+            <artifactId>profile-extension</artifactId>
+            <version>5.0.0</version>
+          </extension>
+        </extensions>
+      </build>
+    </profile>
+  </profiles>
+</project>`)
+
+	p, err := ParsePOM(src)
+	if err != nil {
+		t.Fatalf("ParsePOM: %v", err)
+	}
+	if len(p.Build.Plugins) != 1 || p.Build.Plugins[0].ArtifactID != "maven-compiler-plugin" {
+		t.Errorf("plugins not parsed: %+v", p.Build.Plugins)
+	}
+	if len(p.Build.Plugins[0].Dependencies) != 1 || p.Build.Plugins[0].Dependencies[0].ArtifactID != "plugin-runtime" {
+		t.Errorf("plugin dependencies not parsed: %+v", p.Build.Plugins[0].Dependencies)
+	}
+	if len(p.Build.PluginManagement.Plugins) != 1 || p.Build.PluginManagement.Plugins[0].ArtifactID != "managed-plugin" {
+		t.Errorf("pluginManagement not parsed: %+v", p.Build.PluginManagement)
+	}
+	if len(p.Build.Extensions) != 1 || p.Build.Extensions[0].ArtifactID != "extension" {
+		t.Errorf("extensions not parsed: %+v", p.Build.Extensions)
+	}
+	if len(p.Profiles) != 1 || len(p.Profiles[0].Build.Plugins) != 1 || p.Profiles[0].Build.Plugins[0].ArtifactID != "profile-plugin" {
+		t.Errorf("profile plugins not parsed: %+v", p.Profiles)
+	}
+	if len(p.Profiles[0].Build.Extensions) != 1 || p.Profiles[0].Build.Extensions[0].ArtifactID != "profile-extension" {
+		t.Errorf("profile extensions not parsed: %+v", p.Profiles[0].Build.Extensions)
+	}
+}
+
 func TestParseGAV(t *testing.T) {
 	tests := []struct {
 		in      string

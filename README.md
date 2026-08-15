@@ -2,7 +2,7 @@
 
 Pure-Go effective-POM resolution for Maven artifacts. No JVM, no shelling out to `mvn`.
 
-This computes the subset of `mvn help:effective-pom` that matters for dependency analysis: walk the parent chain, merge `<properties>` and `<dependencyManagement>`, expand `<scope>import</scope>` BOMs, apply profiles, interpolate `${...}`, and fill in missing versions. It does not touch plugins, lifecycle, or build configuration.
+This computes the subset of `mvn help:effective-pom` that matters for dependency analysis: walk the parent chain, merge `<properties>` and `<dependencyManagement>`, expand `<scope>import</scope>` BOMs, apply profiles, interpolate `${...}`, and fill in missing versions. `ParsePOM` also retains raw coordinates from build plugins, plugin management, plugin dependencies, and build extensions for callers inspecting source declarations. The effective-POM resolver does not merge plugins or interpret lifecycle and build configuration.
 
 The motivating use case is vulnerability matching, where a dependency declared as `<version>${jackson.version}</version>` is useless until something resolves the property. See [scrutineer#46](https://github.com/alpha-omega-security/scrutineer/issues/46).
 
@@ -120,7 +120,7 @@ One known divergence: dependencies whose identity is OS-gated (netty's `${os.det
 
 ## What this doesn't do
 
-Plugin merging, lifecycle binding, `<build>` configuration, repository declarations, `settings.xml`, mirror selection, version-range mediation, transitive resolution. This is a model builder, not a dependency resolver. If you need a full tree, feed the output of this into something that walks transitive edges.
+Plugin merging, lifecycle binding, interpretation of arbitrary `<build>` configuration, repository declarations, `settings.xml`, mirror selection, version-range mediation, transitive resolution. This is a model builder, not a dependency resolver. If you need a full tree, feed the output of this into something that walks transitive edges.
 
 ## License
 
