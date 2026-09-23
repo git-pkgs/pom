@@ -124,4 +124,4 @@ Plugin merging, lifecycle binding, interpretation of arbitrary `<build>` configu
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+[MIT](LICENSE).
