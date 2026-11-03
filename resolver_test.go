@@ -3,7 +3,9 @@ package pom
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
+	"strings"
 	"testing"
 )
 
@@ -552,5 +554,71 @@ func TestManagedScopeAndExclusions(t *testing.T) {
 	d := depByGA(ep, "a:b")
 	if d == nil || d.Version != "1.0" || d.Scope != "runtime" || len(d.Exclusions) != 1 {
 		t.Errorf("managed scope/exclusions: %+v", d)
+	}
+}
+
+// A property table whose values each pull in a large seed used to expand with
+// no aggregate cap, so a few thousand small properties could retain the sum of
+// their expansions. A pass that would push the table past the budget is not
+// applied and is reported on the EffectivePOM.
+func TestInterpolatePropsStopsPastAggregateBudget(t *testing.T) {
+	var b strings.Builder
+	b.WriteString(`<project><groupId>org.x</groupId><artifactId>huge</artifactId><version>1.0</version><properties>`)
+	b.WriteString(`<seed>` + strings.Repeat("x", 1024) + `</seed>`)
+	b.WriteString(`<big>` + strings.Repeat("${seed}", 1024) + `</big>`)
+	for i := 0; i < 20; i++ {
+		b.WriteString(fmt.Sprintf(`<f%02d>${big}</f%02d>`, i, i))
+	}
+	b.WriteString(`</properties></project>`)
+	root, err := ParsePOM([]byte(b.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ep, err := NewResolver(mapFetcher{}).ResolvePOM(context.Background(), root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	total := 0
+	for _, v := range ep.Properties {
+		total += len(v)
+	}
+	if total > maxPropsTotalBytes {
+		t.Errorf("properties retained %d bytes; the aggregate budget did not hold", total)
+	}
+	found := false
+	for _, w := range ep.Warnings {
+		if strings.Contains(w, "property expansion reaches") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("no budget warning in %v", ep.Warnings)
+	}
+}
+
+// The resolver accepts a context, but nothing used to read it. A cancelled
+// context now stops interpolation before the first pass is applied.
+func TestResolveHonoursCancelledContext(t *testing.T) {
+	root, _ := ParsePOM([]byte(`<project>
+		<groupId>org.x</groupId><artifactId>local</artifactId><version>1.0</version>
+		<properties><p>${seed}</p><seed>1.0</seed></properties>
+	</project>`))
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	ep, err := NewResolver(mapFetcher{}).ResolvePOM(ctx, root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, w := range ep.Warnings {
+		if strings.Contains(w, "property interpolation stopped") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("no cancellation warning in %v", ep.Warnings)
+	}
+	if got := ep.Properties["p"]; got != "${seed}" {
+		t.Errorf("property p = %q, want the unexpanded expression", got)
 	}
 }

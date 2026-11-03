@@ -219,7 +219,7 @@ func (r *Resolver) ResolvePOM(ctx context.Context, root *POM, opts Options) (*Ef
 
 	rootGAV := root.EffectiveGAV()
 	m.synthesiseProjectProps(root, rootGAV)
-	m.interpolateProps()
+	warnings = append(warnings, m.interpolateProps(ctx)...)
 
 	bomWarnings := r.expandBOMs(ctx, m, 0)
 	warnings = append(warnings, bomWarnings...)
@@ -299,6 +299,10 @@ func (r *Resolver) expandBOMs(ctx context.Context, m *merger, depth int) []strin
 	}
 	imports := m.takeImports()
 	for _, imp := range imports {
+		if err := ctx.Err(); err != nil {
+			warnings = append(warnings, fmt.Sprintf("BOM import stopped: %v", err))
+			return warnings
+		}
 		gav := GAV{
 			GroupID:    interpolate(imp.GroupID, m.props),
 			ArtifactID: interpolate(imp.ArtifactID, m.props),
@@ -334,7 +338,7 @@ func (r *Resolver) resolveBOM(ctx context.Context, gav GAV, depth int) (*Effecti
 		m.apply(p)
 	}
 	m.synthesiseProjectProps(root, root.EffectiveGAV())
-	m.interpolateProps()
+	warnings = append(warnings, m.interpolateProps(ctx)...)
 	warnings = append(warnings, r.expandBOMs(ctx, m, depth)...)
 	m.interpolateDepMgmt()
 	ep := &EffectivePOM{
@@ -583,20 +587,45 @@ func (m *merger) synthesiseProjectProps(root *POM, gav GAV) {
 	}
 }
 
-func (m *merger) interpolateProps() {
+// maxPropsTotalBytes bounds the aggregate size of the merged property table.
+// Each single value is capped by interpolate, but a POM with a few thousand
+// properties that each pull in a large seed used to be able to retain the sum
+// of them, unbounded.
+const maxPropsTotalBytes = 8 << 20 // 8 MiB
+
+// interpolateProps resolves ${...} references in every property, pass by
+// pass. Two guards keep a hostile POM cheap, both reported as warnings rather
+// than errors: a pass whose result would push the property table past
+// maxPropsTotalBytes is not applied, and the context is checked once per
+// pass, so a caller's deadline actually bounds a long resolve.
+func (m *merger) interpolateProps(ctx context.Context) []string {
+	var warnings []string
 	for range maxInterpolationPasses {
+		if err := ctx.Err(); err != nil {
+			warnings = append(warnings, fmt.Sprintf("property interpolation stopped: %v", err))
+			return warnings
+		}
+		next := make(map[string]string, len(m.props))
+		total := 0
 		changed := false
 		for k, v := range m.props {
 			nv := interpolate(v, m.props)
 			if nv != v {
-				m.props[k] = nv
 				changed = true
 			}
+			total += len(nv)
+			next[k] = nv
 		}
+		if total > maxPropsTotalBytes {
+			warnings = append(warnings, fmt.Sprintf("property expansion reaches %d bytes; interpolation stopped", total))
+			return warnings
+		}
+		m.props = next
 		if !changed {
 			break
 		}
 	}
+	return warnings
 }
 
 func (m *merger) interpolateDepMgmt() {
