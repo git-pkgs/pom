@@ -3,7 +3,9 @@ package pom
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
+	"strings"
 	"testing"
 )
 
@@ -552,5 +554,116 @@ func TestManagedScopeAndExclusions(t *testing.T) {
 	d := depByGA(ep, "a:b")
 	if d == nil || d.Version != "1.0" || d.Scope != "runtime" || len(d.Exclusions) != 1 {
 		t.Errorf("managed scope/exclusions: %+v", d)
+	}
+}
+
+func TestInterpolatePropsStopsPastAggregateBudget(t *testing.T) {
+	var b strings.Builder
+	b.WriteString(`<project><groupId>org.x</groupId><artifactId>huge</artifactId><version>1.0</version><properties>`)
+	b.WriteString(`<seed>` + strings.Repeat("x", 1<<20) + `</seed>`)
+	for i := 0; i < 10; i++ {
+		fmt.Fprintf(&b, `<f%02d>${seed}</f%02d>`, i, i)
+	}
+	b.WriteString(`</properties></project>`)
+	root, err := ParsePOM([]byte(b.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ep, err := NewResolver(mapFetcher{}).ResolvePOM(context.Background(), root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	total := 0
+	for _, v := range ep.Properties {
+		total += len(v)
+	}
+	if total > maxPropsTotalBytes {
+		t.Errorf("properties retained %d bytes; the aggregate budget did not hold", total)
+	}
+	found := false
+	for _, w := range ep.Warnings {
+		if strings.Contains(w, "property expansion reaches") {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("no budget warning in %v", ep.Warnings)
+	}
+}
+
+func TestCancelledResolveIsNotCached(t *testing.T) {
+	f := mapFetcher{
+		"org.x:local:1.0": `<project>
+			<groupId>org.x</groupId><artifactId>local</artifactId><version>1.0</version>
+			<properties><p>${seed}</p><seed>1.0</seed></properties>
+		</project>`,
+	}
+	r := NewResolver(f)
+	gav, _ := ParseGAV("org.x:local:1.0")
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := r.Resolve(ctx, gav, Options{}); !errors.Is(err, context.Canceled) {
+		t.Fatalf("Resolve error = %v, want context.Canceled", err)
+	}
+	ep, err := r.Resolve(context.Background(), gav, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := ep.Properties["p"]; got != "1.0" {
+		t.Errorf("property p = %q, want the fully resolved value", got)
+	}
+}
+
+// cancellingFetcher serves from inner and cancels ctx the first time target
+// is fetched, so a cancellation can land mid-resolution.
+type cancellingFetcher struct {
+	inner  Fetcher
+	target string
+	cancel context.CancelFunc
+	fired  bool
+}
+
+func (f *cancellingFetcher) Fetch(ctx context.Context, g GAV) (*POM, error) {
+	p, err := f.inner.Fetch(ctx, g)
+	if !f.fired && g.String() == f.target {
+		f.fired = true
+		f.cancel()
+	}
+	return p, err
+}
+
+func TestCancelledBOMImportIsNotCached(t *testing.T) {
+	inner := mapFetcher{
+		"org.x:app:1.0": `<project>
+			<groupId>org.x</groupId><artifactId>app</artifactId><version>1.0</version>
+			<dependencyManagement><dependencies>
+				<dependency><groupId>org.bom</groupId><artifactId>managed</artifactId><version>2.0</version><type>pom</type><scope>import</scope></dependency>
+			</dependencies></dependencyManagement>
+			<dependencies>
+				<dependency><groupId>a</groupId><artifactId>b</artifactId></dependency>
+			</dependencies>
+		</project>`,
+		"org.bom:managed:2.0": `<project>
+			<groupId>org.bom</groupId><artifactId>managed</artifactId><version>2.0</version><packaging>pom</packaging>
+			<dependencyManagement><dependencies>
+				<dependency><groupId>a</groupId><artifactId>b</artifactId><version>2.5</version></dependency>
+			</dependencies></dependencyManagement>
+		</project>`,
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	f := &cancellingFetcher{inner: inner, target: "org.bom:managed:2.0", cancel: cancel}
+	r := NewResolver(f)
+	gav, _ := ParseGAV("org.x:app:1.0")
+	if _, err := r.Resolve(ctx, gav, Options{}); !errors.Is(err, context.Canceled) {
+		t.Fatalf("Resolve error = %v, want context.Canceled", err)
+	}
+	ep, err := r.Resolve(context.Background(), gav, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d := depByGA(ep, "a:b")
+	if d == nil || d.Version != "2.5" {
+		t.Fatalf("a:b = %+v, want version 2.5 from the imported BOM", d)
 	}
 }
