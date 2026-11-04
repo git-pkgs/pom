@@ -604,11 +604,9 @@ func (m *merger) synthesiseProjectProps(root *POM, gav GAV) {
 	}
 }
 
-// maxPropsTotalBytes bounds the aggregate size of the merged property table.
-const maxPropsTotalBytes = 8 << 20 // 8 MiB
+const maxPropsTotalBytes = 8 << 20
 
-// interpolateProps resolves ${...} references pass by pass and stops at the
-// first cancelled context or pass over the budget.
+// interpolateProps resolves ${...} references pass by pass.
 func (m *merger) interpolateProps(ctx context.Context) ([]string, error) {
 	var warnings []string
 	for range maxInterpolationPasses {
